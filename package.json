@@ -12,5 +12,8 @@
     "christimas"
   ],
   "author": "castrogusttavo",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "clipboardy": "^4.0.0"
+  }
 }
