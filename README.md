@@ -51,7 +51,4 @@ For more information or to connect, visit my social links: <br>
 
 ---
 
-<img src="./assets/tsbuild.png" alt="crab with a Santa hat and hammer featuring the TypeScript logo" style="max-width: 480px; display: block; margin: 0 auto;" />
-
-
-<img src="./assets/tsbuild.png" alt="caranguejo com chapéu de natal e martelo com logo do typescript" style="max-width: 480px; display: block; margin: 0 auto;" />
+<img src="./assets/tsbuild.png" alt="crab with a Santa hat and hammer featuring the TypeScript logo" style="max-width: 30%; display: block; margin: 0 auto;" />

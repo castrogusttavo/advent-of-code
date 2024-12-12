@@ -75,6 +75,8 @@ function day2(lines: string[]): void {
     console.log(safeReports2.length)
 }
 
+function day3(lines: string[]): void{}
+
 function readInput(name: string): string[] {
     const input: string = readFileSync(`./${name}`, 'utf8')
     return input.split('\n')
