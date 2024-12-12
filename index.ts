@@ -5,6 +5,7 @@ function main(): void {
 
     // day1(input)
     // day2(input)
+    // day3(input)
 }
 
 function day1 (lines: string[]): void {
@@ -75,7 +76,29 @@ function day2(lines: string[]): void {
     console.log(safeReports2.length)
 }
 
-function day3(lines: string[]): void{}
+function day3(lines: string[]): void{
+    // Define o regex para encontrar os valores de x e y
+    const regex: RegExp = /mul\((\d+),(\d+)\)/g
+    let match: RegExpMatchArray | null
+    let totalMul: number = 0
+
+    // Itera sobre as linhas e encontra os valores de x e y
+    lines.forEach((line: string): void => {
+        while ((match = regex.exec(line))) {
+            totalMul += parseInt(match[1]) * parseInt(match[2])
+        }
+    })
+
+    let text: string = lines.join('\n').replace(/don't\(\)[\s\S]*?do\(\)/g, '');
+    let totalMul2: number = 0;
+
+    while ((match = regex.exec(text)) !== null) {
+        totalMul2 += parseInt(match[1]) * parseInt(match[2]);
+    }
+
+    console.log(totalMul);
+    console.log(totalMul2);
+}
 
 function readInput(name: string): string[] {
     const input: string = readFileSync(`./${name}`, 'utf8')
