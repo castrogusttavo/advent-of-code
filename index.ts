@@ -6,6 +6,7 @@ function main(): void {
     // day1(input)
     // day2(input)
     // day3(input)
+    day4(input)
 }
 
 function day1 (lines: string[]): void {
@@ -98,6 +99,51 @@ function day3(lines: string[]): void{
 
     console.log(totalMul);
     console.log(totalMul2);
+}
+
+function day4(lines: string[]): void {
+    const matrix: string[][] = lines.map((line: string): string[] => line.split(''))
+    let XmasTotal: number = 0
+    let MasTotal: number = 0
+
+    const getChar: (x: number, y: number) => string = (x: number, y: number): string => matrix[y]?.[x] || ''
+
+    const isXmasPattern: (x: number, y: number) => number = (x: number, y: number): number => {
+        if (getChar(x, y) !== 'X') return 0
+
+        const directions: number[][] = [
+            [1,0], [-1, 0], [0, 1], [0, -1],
+            [1, 1], [-1, 1], [1, -1], [-1, -1]
+        ]
+
+        return directions.reduce((count: number, [dx, dy]: number[]): number => {
+            const sequence: string = Array.from({ length: 4 }, (_: number, i: number): string => getChar(x + i * dx, y + i * dy)).join('')
+            return count + (sequence === 'XMAS' ? 1 : 0)
+        }, 0)
+    }
+
+    const isMasPattern: (x: number, y: number) => boolean = (x: number, y: number): boolean => {
+        const diagonals: string[] = [
+            getChar(x - 1, y - 1) + getChar(x, y) + getChar(x + 1, y + 1),
+            getChar(x - 1, y + 1) + getChar(x, y) + getChar(x + 1, y - 1)
+        ]
+        return diagonals.every((diagonal: string): boolean => diagonal === 'MAS' || diagonal === 'SAM')
+    }
+
+    for (let y: number = 0; y < matrix.length; y++) {
+        for (let x: number = 0; x < matrix[0].length; x++) {
+            XmasTotal += isXmasPattern(x, y)
+        }
+    }
+
+    for (let y: number = 1; y < matrix.length - 1; y++) {
+        for (let x: number = 1; x < matrix[0].length - 1; x++) {
+            if (isMasPattern(x, y)) MasTotal++
+        }
+    }
+
+    console.log(XmasTotal)
+    console.log(MasTotal)
 }
 
 function readInput(name: string): string[] {
