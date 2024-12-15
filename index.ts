@@ -8,7 +8,8 @@ function main(): void {
     // day3(input)
     // day4(input)
     // day5(input)
-    day6(input)
+    // day6(input)
+    day7(input)
 }
 
 function day1 (lines: string[]): void {
@@ -330,6 +331,77 @@ function day6(lines: string[]): void {
 
     console.log(visitedPositions.size)
     console.log(obstacles)
+}
+
+function day7(lines: string[]): void {
+    const equations: { target: number, values: number[] }[] = lines.map((line: string): {
+        target: number,
+        values: number[]
+    } => {
+        const [left, right] = line.split(": ");
+        return {target: parseInt(left), values: right.split(" ").map(Number)};
+    })
+    let totalCorrectEquations: number = 0
+    let totalCalibrateEquations: number = 0
+
+    // Função para avaliar a expressão
+    const evaluateExpression: (values: number[], operator: string[]) => number = (values: number[], operators: string[]): number => {
+        let result: number = values[0]
+
+        // Avalia a expressão com base nos operadores
+        for (let i: number = 0; i < operators.length; i++) {
+            if (operators[i] === '+') {
+                result += values[i + 1]
+            } else if (operators[i] === '*') {
+                result *= values[i + 1]
+            } else if (operators[i] === '||') {
+                result = parseInt(result.toString() + values[i + 1].toString())
+            }
+        }
+        return result
+    }
+
+    // Função para encontrar os operadores válidos
+    const findValidOperators: (target: number, values: number[], possibleOperators: string[] ) => boolean = (target: number, values: number[], possibleOperators: string[]): boolean => {
+        const operatorCount: number = values.length - 1;
+        const allowedOperators: number = possibleOperators.length;
+
+        // Tenta todas as combinações possíveis de operadores
+        for (let i: number = 0; i < Math.pow(allowedOperators, operatorCount); i++) {
+            const operators: string[] = []
+            let n: number = i
+
+            // Converte o número para a base 'allowedOperators'
+            for (let j: number = 0; j < operatorCount; j++) {
+                operators.push(possibleOperators[n % allowedOperators])
+                n = Math.floor(n / allowedOperators)
+            }
+
+            const result: number = evaluateExpression(values, operators)
+            if (result === target) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    // Filtra as equações válidas
+    const validEquations: { target: number, values: number[] }[] = equations.filter((equation: { target: number, values: number[] }): boolean => {
+        return findValidOperators(equation.target, equation.values, ['+', '*'])
+    })
+
+    totalCorrectEquations = validEquations.reduce((acc: number, curr: { target: number, values: number[] }): number => acc + curr.target, 0)
+
+    // Filtra as equações válidas com o operador '||'
+    const calibrateEquations: { target: number, values: number[] }[] = equations.filter((equation: { target: number, values: number[] }): boolean => {
+        return findValidOperators(equation.target, equation.values, ['+', '*', '||'])
+    })
+
+    totalCalibrateEquations = calibrateEquations.reduce((acc: number, curr: { target: number, values: number[] }): number => acc + curr.target, 0)
+
+    console.log(totalCorrectEquations)
+    console.log(totalCalibrateEquations)
 }
 
 function readInput(name: string): string[] {

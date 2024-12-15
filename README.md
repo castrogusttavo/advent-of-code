@@ -9,9 +9,9 @@ This repository contains solutions for each day of the challenge, organized and 
 
 ## Progress
 
-| Year | Stars                                                                                          |
-|------|---------------------------------------------------------------------------------------------------|
-| 2024 | [![2024](https://img.shields.io/badge/stars%20%E2%AD%90-6-yellow)](https://adventofcode.com/2024/stats) |
+| Year | Stars                                                                                                   |
+|------|---------------------------------------------------------------------------------------------------------|
+| 2024 | [![2024](https://img.shields.io/badge/stars%20%E2%AD%90-14-yellow)](https://adventofcode.com/2024/stats) |
 
 ---
 
@@ -49,6 +49,3 @@ For more information or to connect, visit my social links: <br>
 [X/Twitter](https://x.com/gustta_dev)<br>
 [Portfolio](https://castrogusttavo.vercel.app)<br>
 
----
-
-<img src="./assets/tsbuild.png" alt="crab with a Santa hat and hammer featuring the TypeScript logo" style="height: 300px;" />
