@@ -7,7 +7,8 @@ function main(): void {
     // day2(input)
     // day3(input)
     // day4(input)
-    day5(input)
+    // day5(input)
+    day6(input)
 }
 
 function day1 (lines: string[]): void {
@@ -225,6 +226,110 @@ function day5(lines: string[]): void {
 
     console.log(totalSumMiddleValidPages);
     console.log(totalSumMiddleOrderPages);
+}
+
+function day6(lines: string[]): void {
+    let map: string[][] = lines.map((line: string): string[] => line.split(''))
+    let directions: string[] = ['^', '>', 'v', '<'] // Representação das direções (cima, direita, baixo, esquerda)
+    let dx: number[] = [0, 1, 0, -1] // Deslocamento em x para cada direção
+    let dy: number[] = [-1, 0, 1, 0] // Deslocamento em y para cada direção
+    let x: number = 0, y: number = 0, dirIndex: number = 0
+
+    // Encontrar a posição e direção inicial do guarda
+    for (let i: number = 0; i < map.length; i++) {
+        for (let j: number = 0; j < map[i].length; j++) {
+            if (directions.includes(map[i][j])) {
+                x = j
+                y = i
+                dirIndex = directions.indexOf(map[i][j])
+                break
+            }
+        }
+    }
+
+    // Simular o movimento do guarda e obter as posições visitadas
+    let visitedPositions: Set<string> = new Set<string>()
+    let currentX: number = x
+    let currentY: number = y
+    let currentDir: number = dirIndex
+
+    while (true) {
+        let state: string = `${currentX},${currentY}`
+        visitedPositions.add(state)
+
+        let nextX: number = currentX + dx[currentDir]
+        let nextY: number = currentY + dy[currentDir]
+
+        // Verificar se o guarda está fora do mapa
+        if (nextY < 0 || nextY >= map.length || nextX < 0 || nextX >= map[0].length) {
+            break
+        }
+
+        // Verificar a próxima célula
+        if (map[nextY][nextX] === '#') {
+            // Virar à direita
+            currentDir = (currentDir + 1) % 4
+        } else {
+            // Andar para frente
+            currentX = nextX
+            currentY = nextY
+        }
+    }
+
+    // Verificar quantos obstáculos são necessários inserir para que o guarda fique em loop
+    let obstacles: number = 0
+
+    const simulateGuardWithObstruction: (obstructionX: number, obstructionY: number) => boolean = (obstructionX: number, obstructionY: number): boolean => {
+        let visited: Set<string> = new Set<string>()
+        let tempX: number = x
+        let tempY: number = y
+        let tempDir: number = dirIndex
+
+        // Adicionar obstrução temporária
+        map[obstructionY][obstructionX] = '#'
+
+        while (true) {
+            let state: string = `${tempX}, ${tempY}, ${tempDir}`
+            if (visited.has(state)) {
+                // O guarda revisitou a mesma posição/direção -> ciclo detectado
+                map[obstructionY][obstructionX] = '.'
+                return true
+            }
+            visited.add(state)
+
+            let nextX: number = tempX + dx[tempDir]
+            let nextY: number = tempY + dy[tempDir]
+
+            if (nextY < 0 || nextY >= map.length || nextX < 0 || nextX >= map[0].length) {
+                // O guarda saiu do mapa
+                map[obstructionY][obstructionX] = '.'
+                return false
+            }
+
+            if (map[nextY][nextX] === '#') {
+                // Obstrução encontrada, vire à direita
+                tempDir = (tempDir + 1) % 4
+            } else {
+                // Avance na direção atual
+                tempX = nextX
+                tempY = nextY
+            }
+        }
+    }
+
+    for (let i: number = 0; i < map.length; i++) {
+        for (let j: number = 0; j < map[i].length; j++) {
+            if (map[i][j] === '.' && !(i === y && j === x)) {
+                // Testar obstrução nessa posição
+                if (simulateGuardWithObstruction(j, i)) {
+                    obstacles++
+                }
+            }
+        }
+    }
+
+    console.log(visitedPositions.size)
+    console.log(obstacles)
 }
 
 function readInput(name: string): string[] {
