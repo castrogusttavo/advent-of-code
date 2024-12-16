@@ -9,7 +9,8 @@ function main(): void {
     // day4(input)
     // day5(input)
     // day6(input)
-    day7(input)
+    // day7(input)
+    day8(input)
 }
 
 function day1 (lines: string[]): void {
@@ -403,6 +404,147 @@ function day7(lines: string[]): void {
     console.log(totalCorrectEquations)
     console.log(totalCalibrateEquations)
 }
+
+function day8(lines: string[]): void {
+// Função para encontrar todas as antenas no mapa
+    function findAntennas(map: string[]): { x: number; y: number; freq: string }[] {
+        const antennas = [];
+        for (let y = 0; y < map.length; y++) {
+            for (let x = 0; x < map[y].length; x++) {
+                const char = map[y][x];
+                if (char !== ".") {
+                    antennas.push({ x, y, freq: char });
+                }
+            }
+        }
+        return antennas;
+    }
+
+    // Função para calcular o MDC
+    function gcd(a: number, b: number): number {
+        return b === 0 ? Math.abs(a) : gcd(b, a % b);
+    }
+
+    // Função para calcular os antinodos
+    function calculateAntinodes(map: string[]): number {
+        // Remover caracteres \r das linhas, caso existam
+        const cleanMap = map.map((line) => line.replace(/\r/g, ""));
+
+        const antennas = findAntennas(cleanMap);
+        const antinodes = new Set<string>();
+
+        // Para cada par de antenas com a mesma frequência
+        for (let i = 0; i < antennas.length; i++) {
+            for (let j = i + 1; j < antennas.length; j++) {
+                const a1 = antennas[i];
+                const a2 = antennas[j];
+
+                if (a1.freq === a2.freq) {
+                    // Calcular a distância entre as antenas
+                    const dx = a2.x - a1.x;
+                    const dy = a2.y - a1.y;
+
+                    // Verificar se existe uma relação de 2:1 nas distâncias
+                    const antinode1X = a1.x - dx;
+                    const antinode1Y = a1.y - dy;
+                    const antinode2X = a2.x + dx;
+                    const antinode2Y = a2.y + dy;
+
+                    // Adicionar as coordenadas válidas
+                    antinodes.add(`${antinode1X},${antinode1Y}`);
+                    antinodes.add(`${antinode2X},${antinode2Y}`);
+                }
+            }
+        }
+
+        // Filtro para manter os antinodos dentro dos limites do mapa
+        const uniqueAntinodes = Array.from(antinodes).filter((coord) => {
+            const [x, y] = coord.split(",").map(Number);
+            return x >= 0 && x < cleanMap[0].length && y >= 0 && y < cleanMap.length;
+        });
+
+        return uniqueAntinodes.length;
+    }
+
+    // Função para calcular os antinodos único
+    function calculateUniqueAntinodes(map: string[]): number {
+        const cleanMap = map.map((line) => line.replace(/\r/g, ""));
+        const antennas = findAntennas(cleanMap);
+        const antinodes = new Set<string>();
+        const rows = cleanMap.length;
+        const cols = cleanMap[0].length;
+
+        // Para cada par de antenas com a mesma frequência
+        for (let i = 0; i < antennas.length; i++) {
+            for (let j = i + 1; j < antennas.length; j++) {
+                const a1 = antennas[i];
+                const a2 = antennas[j];
+
+                if (a1.freq === a2.freq) {
+                    let dx = a2.x - a1.x;
+                    let dy = a2.y - a1.y;
+                    const g = gcd(dx, dy);
+                    dx /= g;
+                    dy /= g;
+
+                    // Fixar direção para unicidade
+                    if (dx < 0 || (dx === 0 && dy < 0)) {
+                        dx = -dx;
+                        dy = -dy;
+                    }
+
+                    // Forma normal da linha: dx*y - dy*x = K
+                    const K = dx * a1.y - dy * a1.x;
+                    const lineKey = `${dx},${dy},${K}`;
+
+                    // Gerar os antinodos ao longo da linha
+                    function rangeForDimension(pos: number, d: number, limit: number): [number, number] {
+                        if (d === 0) {
+                            if (pos < 0 || pos >= limit) return [1, -1];
+                            return [-Infinity, Infinity];
+                        } else if (d > 0) {
+                            const minM = Math.ceil(-pos / d);
+                            const maxM = Math.floor((limit - 1 - pos) / d);
+                            return [minM, maxM];
+                        } else {
+                            const minM = Math.ceil((limit - 1 - pos) / d);
+                            const maxM = Math.floor(-pos / d);
+                            return [minM, maxM];
+                        }
+                    }
+
+                    const [minMx, maxMx] = rangeForDimension(a1.x, dx, cols);
+                    const [minMy, maxMy] = rangeForDimension(a1.y, dy, rows);
+                    const minM = Math.max(minMx, minMy);
+                    const maxM = Math.min(maxMx, maxMy);
+
+                    if (minM <= maxM) {
+                        for (let m = minM; m <= maxM; m++) {
+                            const x = a1.x + m * dx;
+                            const y = a1.y + m * dy;
+                            antinodes.add(`${x},${y}`);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Filtrar antinodos dentro dos limites do mapa
+        const uniqueAntinodes = Array.from(antinodes).filter((coord) => {
+            const [x, y] = coord.split(",").map(Number);
+            return x >= 0 && x < cols && y >= 0 && y < rows;
+        });
+
+        return uniqueAntinodes.length;
+    }
+
+    const totalAntinodes = calculateAntinodes(lines);
+    const uniqueAntinodes = calculateUniqueAntinodes(lines);
+
+    console.log(totalAntinodes);
+    console.log(uniqueAntinodes)
+}
+
 
 function readInput(name: string): string[] {
     const input: string = readFileSync(`./${name}`, 'utf8')
